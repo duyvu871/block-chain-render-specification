@@ -1,113 +1,165 @@
-import Image from 'next/image'
+'use client'
 
+import { assets } from "@/ultis/asset-ultis";
+import Image from "next/image";
+import {useState, useEffect, ChangeEvent} from "react";
+import { tw } from "@/ultis/tailwind-ultis";
+import {CryptoRotation} from "@/components/crypto-rotation";
+import { RegisterButton } from "@/components/register";
+
+const similarColor: string[] = [
+    "bg-pink-600",
+    "bg-yellow-500",
+    "bg-orange-400",
+    "bg-orange-500",
+    "bg-blue-800",
+    "bg-gray-700",
+    "bg-gray-800",
+    "bg-blue-700",
+    "bg-red-500",
+    "bg-green-500",
+    "bg-blue-800",
+    "bg-blue-500",
+    "bg-orange-500",
+    "bg-blue-400",
+    "bg-blue-600",
+];
+
+const similarColorText: string[] = similarColor.map((color) => color.replace("bg", "text"));
+// console.log(similarColorText);
 export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+    const [isLogin, setIsLogin] = useState<boolean>(false);
+    const [isRegister, setIsRegister] = useState<boolean>(false);
+    const [crypto, setCrypto] = useState<string>(assets.cryptoIcon[0]);
+    const [cryptoIndex, setCryptoIndex] = useState<number>(0);
+    const [showBackground, setShowBackground] = useState<boolean>(false)
+    const [isSubmit, setSubmitState] = useState<boolean>(false);
+    const [token, setToken] = useState<string>("");
+    const [isTokenValid, setIsTokenValid] = useState<boolean>(false);
+
+    const directToDetailPage = () => {
+        if (!token) {
+            setIsTokenValid(false);
+            return;
+        } else {
+            setIsTokenValid(true);
+            window.location.href = "/detail/" + token;
+        }
+    }
+
+    useEffect(() => {
+        let currentIndex = 0;
+        const rotateCrypto = () => {
+            setCrypto(assets.cryptoIcon[currentIndex]);
+            setCryptoIndex(currentIndex);
+            // setCurrentColor(similarColor[cryptoIndex].replace("bg", "text"));
+            currentIndex  = (currentIndex + 1) % assets.cryptoIcon.length;
+        }
+
+        const interval = setInterval(rotateCrypto, 2000);
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
+        setShowBackground(true);
+    }, []);
+
+    return (
+        <main >
+            {/*background color*/}
+            <div className={tw(
+                "fixed inset-0 transition-colors delay-100 duration-700 ease-out",
+                similarColor[cryptoIndex]
+                )} />
+            {/*grid*/}
+            <div
+                className={"fixed inset-0 opacity-30" }
+                style={{
+                    backgroundImage: `url(${assets.square})`,
+                    backgroundSize: "30px"
+                }}
+            ></div>
+            {/*gradient*/}
+            <Image src={assets.gradient}
+                   className={"fixed inset-0 w-screen h-screen object-cover"}
+                   height={1200} width={1200}
+                   role={"presentation"}
+                   alt={"gradiant background"}
             />
-          </a>
-        </div>
-      </div>
+            {/*Reveal*/}
+            <div className={tw(
+                "bg-black fixed inset-0 transition-opacity duration-1000",
+                (!showBackground ? "opacity-100" : "opacity-0")
+                )} />
+            <div className={"fixed max-w-7xl mt-20 mx-auto inset-0"}>
+                <div className={"flex flex-col items-center"}>
+                    <div className={"flex flex-row items-center"}>
+                        {/*<Image*/}
+                        {/*    src={assets.cryptoIcon[cryptoIndex]}*/}
+                        {/*    height={100}*/}
+                        {/*    width={100}*/}
+                        {/*    alt={"logo"}*/}
+                        {/*    className={"rounded-full inline-block mr-4 border-2 border-white stroke-white"}*/}
+                        {/*/>*/}
+                        <CryptoRotation currentCrypto={cryptoIndex} />
+                        <h1 className={"text-6xl font-bold text-white"}>Crypto</h1>
+                    </div>
+                    <h2 className={tw( "text-3xl text-center font-bold mt-3 mx-auto")}>
+                        Crypto
+                        <span
+                            className={tw(
+                                "transition-colors duration-200",
+                                [
+                                    "text-pink-600",
+                                    "text-yellow-500",
+                                    "text-orange-400",
+                                    "text-orange-500",
+                                    "text-blue-800",
+                                    "text-gray-700",
+                                    "text-gray-800",
+                                    "text-blue-700",
+                                    "text-red-500",
+                                    "text-green-500",
+                                    "text-blue-800",
+                                    "text-blue-500",
+                                    "text-orange-500",
+                                    "text-blue-400",
+                                    "text-blue-600"
+                                ][cryptoIndex]
+                            )}
+                        >{" "}trading{" "}</span>
+                        for everyone
+                    </h2>
+                    <div className={"flex flex-row items-center mt-20"} >
+                        <input
+                            className={tw(
+                                "py-2 px-4 rounded mr-4 outline-none",
+                                similarColorText[cryptoIndex],
+                                "placeholder-gray-400",
+                                "transition-colors duration-200",
+                                (isSubmit
+                                    ? isTokenValid ? "border-2 border-green-500" : "border-2 border-red-500"
+                                    : "border-2 border-white"
+                                )
+                            )}
+                            placeholder={"Token"}
+                            value={token}
+                            onChange={(e) => setToken(e.target.value)} />
+                        <RegisterButton
+                            onClick={(event) => {
+                                setSubmitState(true);
+                                directToDetailPage();
+                            }}
+                            colorPicker={{static: similarColor[cryptoIndex]}}
+                        >
+                            Join now
+                        </RegisterButton>
+                    </div>
+                </div>
+            </div>
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore the Next.js 13 playground.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+        </main>
+    )
 }
