@@ -3,6 +3,13 @@ import { NumericFormat } from "react-number-format";
 import Image from "next/image";
 import {formatCurrency, usdtToVndIntegers} from "@/ultis/currency";
 import RegisterButton from "@/components/register/button";
+
+import showPopup from "@/actions/showPopup";
+import { useSelector, useDispatch } from "react-redux";
+import popupReducer from "@/reducers/popupShow";
+// import {divideLargeIntegers} from "@/ultis/currency";
+// import {useEffect, useState} from "react";
+
 const Wallet = ({
     walletRemain,
     cryptoType,
@@ -12,6 +19,16 @@ const Wallet = ({
     cryptoType: string;
     className: string;
 }) => {
+    const dispatch = useDispatch();
+    // const showPopupState = useSelector((state: any) => state.popupReducer);
+
+    // const [balance, setBalance] = useState<string>("0");
+    //
+    // useEffect(() => {
+    //     setBalance(divideLargeIntegers(String(walletRemain), 1e18.toString()));
+    //     console.log(balance)
+    // }, [setBalance]);
+
     return (
       <div className={tw(
           "flex flex-col items-start pr-5 pl-10 gap-2",
@@ -24,7 +41,7 @@ const Wallet = ({
               </h1>
               <div  className={"text-gray-200"}>
                     <p className={"wrap-anywhere"}>
-                        {formatCurrency(String(walletRemain))}{" "}{cryptoType}
+                        {formatCurrency(walletRemain.toString())}{" "}{cryptoType}
                     </p>
               </div>
               <div  className={"text-gray-500 text-[12px]"}>
@@ -35,7 +52,10 @@ const Wallet = ({
           </div>
           <div className={"flex flex-row  items-start flex-wrap gap-2"}>
               <RegisterButton
-                  onClick={() => {}}
+                  onClick={() => {
+                        dispatch(showPopup(true));
+                      console.log("showPopupState", popupReducer);
+                  }}
                   className={"text-[12px] text-gray-200"}
               >
                   Mua
